@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import UserModel from "./user.model";
+import mongoose from "mongoose";
 const bcryptjs = require("bcryptjs");
 
 // Create a new user
@@ -45,6 +46,7 @@ export const login = async (req: Request, res: Response) => {
     return res.send({
       role: user?.role,
       email: user?.email,
+      name: user?.fullname,
     });
   } catch (error) {
     console.error(error);
@@ -113,12 +115,17 @@ export const deleteById = async (
   res: Response
 ): Promise<void> => {
   const userId = req.params.id;
+  console.log('userId: ', userId);
   try {
+    const objectId = new mongoose.Types.ObjectId(userId);
     const deletedUser = await UserModel.findByIdAndUpdate(
-      userId,
+
+      { _id: userId },
       { is_active: false },
       { new: true }
+
     );
+    console.log('deletedUser: ', deletedUser);
     if (!deletedUser) {
       res.status(404).json({ message: "User not found" });
       return;
