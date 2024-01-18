@@ -17,9 +17,54 @@ export const add = async (req: Request, res: Response) => {
 // Get all cars
 export const get = async (req: Request, res: Response) => {
   try {
-    const cars = await CarModel.find({});
-    console.log('cars: ', cars);
+    const filters: any = req.query;
+    console.log("filters: ", filters);
+    const cars = await CarModel.find(filters);
     res.status(200).json(cars);
+  } catch (error) {
+    console.log("error: ", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Get all cars
+export const search = async (req: Request, res: Response) => {
+  try {
+    // Constructing the query
+    const query:any = {};
+    const searchParams:any = req.query;
+
+    // Adding model search (case-insensitive and partial match)
+    if (searchParams?.model) {
+      const modelRegex = new RegExp(`${searchParams.model}`, 'i');
+      query.$or = [
+        { model: { $regex: modelRegex } },
+        { transmission: { $regex: modelRegex } },
+        { description: { $regex: modelRegex } },
+        { fuelType: { $regex: modelRegex } },
+        { engine: { $regex: modelRegex } },
+        { color: { $regex: modelRegex } },
+        { features: { $regex: modelRegex } },
+        { condition: { $regex: modelRegex } },
+      ];
+    }
+
+    // Adding year search
+    if (searchParams?.year) {
+      query.year = searchParams.year;
+    }
+
+    // Adding price range search
+    if (searchParams?.price) {
+      query.price = {
+        $gte: parseInt(searchParams.price) - 5000,
+        $lte: parseInt(searchParams.price) + 10000,
+      };
+    }
+
+    // Performing the search
+    const cars = await CarModel.find(query);
+    res.send(cars)
   } catch (error) {
     console.log("error: ", error);
     res.status(500).json({ error: "Internal Server Error" });

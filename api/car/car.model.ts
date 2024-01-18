@@ -9,18 +9,15 @@ const carSchema = new Schema<CarI>(
     year: { type: Number, required: false },
     mileage: { type: Number, required: false },
     price: { type: Number, required: false },
-    transmission: { type: String, required: false }, // dropdown
+    transmission: { type: String, required: false },
     doors: { type: Number, required: false },
-    fuelType: { type: String, required: false }, // dropdown
+    fuelType: { type: String, required: false },
     seats: { type: Number, required: false },
     engine: { type: String, required: false },
     color: { type: String, required: false },
-    condition: { type: String, required: false }, // dropdown
+    condition: { type: String, required: false },
     sale: { type: Boolean, required: false },
-    features: { type: String, required: false },
-    safetyFeatures: { type: String, required: false },
-    exteriorFeatures: { type: String, required: false },
-    interiorFeatures: { type: String, required: false },
+    features: [{ type: String, required: false }],
   },
   {
     timestamps: true,
